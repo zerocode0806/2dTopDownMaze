@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class MazeGenerator : MonoBehaviour
+public class Room : MonoBehaviour
 {
     public enum Directions
     {
