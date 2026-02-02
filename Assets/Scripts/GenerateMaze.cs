@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -80,5 +81,142 @@ public class GenerateMaze : MonoBehaviour
         SetCamera();
     }
 
+    private void RemoveRoomWall(
+        int x,
+        int y,
+        Room.Directions dir) 
+    {
+        rooms[x, y].SetDirFlag(dir, false);
 
+        Room.Directions opp = Room.Directions.TOP;
+        switch (dir)
+        { 
+            case Room.Directions.TOP:
+                if(y < numY -1 )
+                {
+                    opp = Room.Directions.BOTTOM;
+                    ++y;
+                }
+                break;
+            case Room.Directions.RIGHT:
+                if (x < numX - 1)
+                {
+                    opp = Room.Directions.LEFT;
+                    ++x;
+                }
+                break;
+            case Room.Directions.BOTTOM:
+                if (y > 0)
+                {
+                    opp = Room.Directions.TOP;
+                    --y;
+                }
+                break;
+            case Room.Directions.LEFT:
+                if (x < 0)
+                {
+                    opp = Room.Directions.RIGHT;
+                    --x;
+                }
+                break;
+        }
+        rooms[x,y].SetDirFlag(dir, false);
+    }
+    public List<Tuple<Room.Directions, Room>> GetNeighboursNotVisited(
+        int cx, int cy)
+    {
+        List<Tuple<Room.Directions, Room>> neighbours = 
+            new List<Tuple<Room.Directions, Room>> ();
+
+        foreach(Room.Directions dir in Enum.GetValues(
+            typeof(Room.Directions)))
+        {
+            int x = cx;
+            int y = cy;
+
+            switch (dir) 
+            {
+                case Room.Directions.TOP:
+                    if(y < numY -1)
+                    {
+                        ++y;
+                        if
+                            (!rooms[x, y].visited)
+                        {
+                            neighbours.Add(new Tuple<Room.Directions, Room>(
+                                Room.Directions.TOP, rooms[x, y]));
+                        }
+                    }
+                    break;
+                case Room.Directions.RIGHT:
+                    if (x < numX - 1)
+                    {
+                        ++x;
+                        if
+                            (!rooms[x, y].visited)
+                        {
+                            neighbours.Add(new Tuple<Room.Directions, Room>(
+                                Room.Directions.RIGHT, rooms[x, y]));
+                        }
+                    }
+                    break;
+                case Room.Directions.BOTTOM:
+                    if (y > 0)
+                    {
+                        --y;
+                        if
+                            (!rooms[x, y].visited)
+                        {
+                            neighbours.Add(new Tuple<Room.Directions, Room>(
+                                Room.Directions.BOTTOM, rooms[x, y]));
+                        }
+                    }
+                    break;
+                case Room.Directions.LEFT:
+                    if (x > 0)
+                    {
+                        ++x;
+                        if
+                            (!rooms[x, y].visited)
+                        {
+                            neighbours.Add(new Tuple<Room.Directions, Room>(
+                                Room.Directions.LEFT, rooms[x, y]));
+                        }
+                    }
+                    break;
+            }
+            return neighbours;
+        }
+    }
+    private bool GenerateStep()
+    {
+        if(stack.Count > 0) return true; 
+
+        Room r = stack.Peek();
+        var neighbours = GetNeighboursNotVisited(r.Index.x, r.Index.y );
+
+        if (neighbours.Count != 0)
+        {
+            var index = 0;
+            if (neighbours.Count > 1)
+            { 
+                index = UnityEngine.Random.Range(0, neighbours.Count);
+            }
+
+            var item = neighbours[index];
+            Room neighbour = item.Item2;
+            neighbour.visited = true;
+            RemoveRoomWall(r.Index.x, r.Index.y, item.Item1);
+
+            stack.Push(neighbour); 
+        }
+        else
+        {
+            stack.Pop();
+        }
+
+        return false;
+    }
 }
+
+
