@@ -76,7 +76,4 @@ Special thanks for sharing valuable programming knowledge.
 
 ---
 
-## Author
 
-Created by Ubed Dahlan  
-Unity Developer
