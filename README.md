@@ -37,12 +37,14 @@ Maze generation is animated using Unity coroutines.
 ---
 
 ## Project Structure
+```text
 Assets/
 ├── Scripts/
 │ ├── GenerateMaze.cs
 │ └── Room.cs
 ├── Prefabs/
 │ └── Room.prefab
+```
 ---
 
 ## Requirements
