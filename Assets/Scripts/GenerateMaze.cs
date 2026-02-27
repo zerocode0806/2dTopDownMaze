@@ -7,6 +7,8 @@ using UnityEngine.InputSystem;
 public class GenerateMaze : MonoBehaviour
 {
     [SerializeField] GameObject roomPrefab;
+    [SerializeField] GameObject playerPrefab;
+
 
     Room[,] rooms;
 
@@ -239,6 +241,10 @@ public class GenerateMaze : MonoBehaviour
     {
         if (generating) return;
 
+        var oldPlayer = GameObject.FindGameObjectWithTag("Player");
+        if (oldPlayer != null)
+            Destroy(oldPlayer);
+
         ResetMaze();
 
         rooms[0, 0].visited = true;
@@ -260,6 +266,8 @@ public class GenerateMaze : MonoBehaviour
         }
 
         generating = false;
+
+        SpawnPlayer(); // Spawn AFTER maze is complete
     }
 
     // ===============================
@@ -292,5 +300,15 @@ public class GenerateMaze : MonoBehaviour
         {
             CreateMaze();
         }
+    }
+
+    void SpawnPlayer()
+    {
+        Vector3 spawnPos = rooms[0, 0].transform.position;
+
+        // Slight offset to avoid overlapping wall pivot issues
+        spawnPos += new Vector3(roomWidth * 0.25f, roomHeight * 0.25f, 0);
+
+        Instantiate(playerPrefab, spawnPos, Quaternion.identity);
     }
 }
